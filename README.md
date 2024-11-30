@@ -1,18 +1,15 @@
 # Fine-Tuning Vision Transformer for Image Classification
 
 ## Overview
-This script allows CSCI-525.10 students to utilize a simple PEFT model with their dataset. 
-- This was accomplished with an aim to demonstrate parameter-efficient fine-tuning of a Vision Transformer (ViT) model using **LoRA (Low-Rank Adaptation)** for image classification.
+This script allows CSCI-525.10 students to utilize a pre-trained PEFT model with their dataset by running a few simple commands.  
+- This was developed with an aim to demonstrate parameter-efficient fine-tuning of a Vision Transformer (ViT) model using **LoRA (Low-Rank Adaptation)** for image classification.
 - I've currently fine-tuned the `google/vit-base-patch16-224` model to classify a custom image dataset efficiently, making it suitable for resource-constrained environments. Highly recomend GPU training for Advanced Phase 3.
 
 ## Getting Started
 ### Prerequisites
-- Clone the project `git clone https://github.com/rakshith077-bn/mld-FineTune`
-- Install the required packages
-```sh
-pip install -r requirements.txt
-```
 
+- Clone the project `git clone https://github.com/rakshith077-bn/mld-FineTune`
+- make sure your currently in the same directory as `mld-FineTune`    
 
 ### It is recommended to use a virtual environment: 
 
@@ -21,12 +18,18 @@ python3 -m venv venv
 source venv/bin/activate  # macOS/Linux
 venv\Scripts\activate  # Windows
 ```
+- Install the required packages
+```sh
+pip install -r requirements.txt
+```
 
 ## Running PEFT on sample data
-- run PEFT on a sample dataset. Check sample_data
+- run PEFT on a sample dataset. Check sample_data for the expected structure of the dataset
 
+
+- Run the model with just a few arguments
 ```python
-python fine_tune.py --data_path sample_data --num_epochs 10 --batch_size 16
+python fine_tune.py --data_path <dataset_path> --num_epochs 10 --batch_size 16
 ```
 
 ## Dataset Format: 
