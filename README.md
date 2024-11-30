@@ -63,14 +63,14 @@ After training, the model is evaluated on a test dataset, and the average test l
 - Outputs .pth file which can be used for feature extraction with a deep learner of your choice.
 
 ## Citation
-If you use this code, please provide the following citation:
+If you use this repository in your work, provide the following citation:
 
 ```bibtex
 @misc{rakshith2024customPEFTscript,
   author = {Rakshith B N},
   title = {Parameter-Efficient Fine-Tuning of Vision Transformer for Image Classification for CSCI-525.10 Machine Learning Design},
   year = {2024},
-  howpublished = {\url{https://github.com/rakshith077-bn/MLD-Fintune}},
+  published = {\url{https://github.com/rakshith077-bn/MLD-Fintune}},
 }
 ```
 
@@ -78,6 +78,5 @@ If you use this code, please provide the following citation:
 This project is open source and available under the [MIT License](LICENSE).
 
 ## Acknowledgments
-- The Vision Transformer model used in this project was pre-trained on the **ImageNet-21k** dataset.
+- The Vision Transformer model used in this project was pre-trained on the **ImageNet-21k** dataset. https://huggingface.co/models?search=google/vit. Neccessary citations have been provided in places used. 
 - This can be used for CSCI-525.10 as a part of Phase 3 option 1 (PEFT)
-
