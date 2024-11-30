@@ -12,7 +12,6 @@
 # └────────────────────────────────────────────────────────────────────────────── ┘
 #
 # If you use this code in your work, cite it using reference.
-# For more details, visit: https://github.com/yourusername/finetune-vit-project
 
 
 import argparse
