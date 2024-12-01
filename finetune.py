@@ -22,10 +22,15 @@ from torch.utils.data import DataLoader
 import torch.utils.data
 from transformers import ViTForImageClassification, Trainer, TrainingArguments
 from peft import LoraConfig, get_peft_model
-from load_dataset import ImageDataset
 from utilities import transformations
-import os
 import torchvision
+
+import os
+from tqdm import tqdm
+import datetime, time
+
+from load_dataset import ImageDataset
+from colorama import Fore, Style
 
 
 # experiment with different preprocessing approaches if you wish
@@ -55,10 +60,26 @@ def main():
     
     args = parser.parse_args()
 
+    def log_message(stage, message):
+        
+        timestamp = datetime.datetime.now().strftime("[%H:%M:%S]")
+        stage_color = {
+            "info": Fore.CYAN,
+            "success": Fore.GREEN,
+            "warning": Fore.YELLOW,
+            "error": Fore.RED,
+        }.get(stage.lower(), Fore.WHITE)
+        
+        print(f"{timestamp} - {stage_color}{stage.upper():<10}{Style.RESET_ALL} - {message}")
+    
     # Load dataset using load_dataset.py
     dataset_path = args.data_path
     
     BATCH = args.batch_size
+    
+    # for macOS, recomended you have installed tensorflow-macos and tensorflow-metal
+    device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.has_mps else "cpu")
+    print(f"Using device: {device}") # Know your device. If it is on CPU it is likely take a long time. 
     
     dataset = ImageDataset(root_dir=dataset_path, transform=transformations)
     
@@ -106,7 +127,8 @@ def main():
 
     # using patch16-224 since I'm quite familiar with the target modules
     model = ViTForImageClassification.from_pretrained('google/vit-base-patch16-224', torch_dtype=torch.float16, device_map='auto')
-
+    model = model.to(device)
+    
     # Apply parameter-efficient fine-tuning by LORA
     config = LoraConfig(
         r=8,
@@ -122,11 +144,6 @@ def main():
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
     
-    # Know your device. If it is on CPU it is likely take a long time. 
-    
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model.to(device)
-    print(f"Using Device: {device}")
 
     # Define optimizer and loss function
     
@@ -139,11 +156,12 @@ def main():
     
     for epoch in range(num_epochs):
         model.train()
+        
+        epoch_start = time.time()
+        log_message("info", f"Starting Epoch {epoch + 1}/{num_epochs}")
         train_loss = 0
         
-        print(f"Epoch: {epoch + 1}/{num_epochs}")
-        
-        for images, labels in train_loader:
+        for images, labels in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", leave=False):
             images, labels = images.to(device), labels.to(device)
             optimizer.zero_grad()
             outputs = model(pixel_values=images).logits
@@ -152,10 +170,13 @@ def main():
             optimizer.step()
             train_loss += loss.item()
         
+        
         avg_train_loss = train_loss / len(train_loader)
         
-        print(f'Epoch {epoch + 1}/{num_epochs}')
-        print('Training Loss: {avg_train_loss:.4f}')
+        epoch_end = time.time()
+        time_per_epoch = epoch_end - epoch_start
+        
+        log_message("info", f"Epoch {epoch + 1} completed. Training Loss: {avg_train_loss:.4f} - Time: {time_per_epoch:.2f}s")
 
     # Testing your loss score
     model.eval()
@@ -175,12 +196,12 @@ def main():
     
     avg_test_loss = test_loss / len(test_loader)
     
-    print(f'Loss: {avg_test_loss:.4f}')
+    log_message("info", f"Test Loss: {avg_test_loss:.4f}")
 
     # Save the model
     model_save_path = 'model.pth'
     torch.save(model.state_dict(), model_save_path)
-    print(f'Saved Model: {model_save_path}')
+    log_message("info", f"Saved Model: {model_save_path}")
 
 if __name__ == '__main__':
     main()
