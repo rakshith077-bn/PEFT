@@ -29,7 +29,7 @@ pip install -r requirements.txt
 
 - Run the model with just a few arguments
 ```python
-python fine_tune.py --data_path <dataset_path> --num_epochs 10 --batch_size 16
+python finetune.py --data_path <dataset_path> --num_epochs 10 --batch_size 16
 ```
 
 ## Dataset Format: 
