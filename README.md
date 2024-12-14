@@ -4,6 +4,7 @@
 This script allows CSCI-525.10 students to utilize a pre-trained PEFT model with their dataset by running a few simple commands.  
 - This was developed with an aim to demonstrate parameter-efficient fine-tuning of a Vision Transformer (ViT) model using **LoRA (Low-Rank Adaptation)** for image classification.
 - I've currently fine-tuned the `google/vit-base-patch16-224` model to classify a custom image dataset efficiently, making it suitable for resource-constrained environments. Highly recomend GPU training for Advanced Phase 3.
+- Save embeddings to a csv file, using the feature extraction method.  
 
 ## Getting Started
 ### Prerequisites
@@ -32,6 +33,21 @@ pip install -r requirements.txt
 python finetune.py --data_path <dataset_path> --num_epochs 10 --batch_size 16
 ```
 
+### Arguments
+- `--data_path`: Path to the dataset folder.
+- `--num_epochs`: Number of training epochs.
+- `--batch_size`: Batch size for training.
+
+## Using Feature Extraction
+- Utilize the feature extraction method to extract embeddings. The output is stored in a csv file following the norms defined in the CSCI-525.10 Machine Learning Design course.
+- Run the feature extraction with just a few arguments. 
+```python
+python feature_extraction.py --model_path <.pth path> --dataset_path <dataset_path>
+```
+
+### Note 
+- `--model_path <.pth path>` - This file contains the trained weights of the PEFT model. It is generated after the training phase and generally stored in the same directory. 
+
 ## Dataset Format: 
 The dataset is expected to be in the following format. Do not worry about the split, it is done within the script
 
@@ -42,11 +58,6 @@ sample_data
     ├── class2
     └── ...
 ```
-
-### Arguments
-- `--data_path`: Path to the dataset folder.
-- `--num_epochs`: Number of training epochs (default is 10).
-- `--batch_size`: Batch size for training (default is 16).
 
 ## PEFT
 - **Model**: The `google/vit-base-patch16-224` Vision Transformer model is used, fine-tuned with LoRA applied to specific attention layers (`query` and `value` projections).
