@@ -51,9 +51,9 @@ def main():
     
     parser.add_argument('--data_path', type=str, required=True, help='Path to the dataset file')
     
-    parser.add_argument('--num_epochs', type=int, default=10, help='Number of training epochs. Minimum is 10')
+    parser.add_argument('--num_epochs', type=int, help='Number of training epochs. Minimum is 10')
     
-    parser.add_argument('--batch_size', type=int, default=16, help='Define batch size. Recomended 16, if you are on a slower computer try 8')
+    parser.add_argument('--batch_size', type=int, help='Define batch size. Recomended 16, if you are on a slower computer try 8')
     
     #parser.add_argument('--num_classes', type=int, help='Number of classes present in your dataset. Count from 1 not 0')
     
