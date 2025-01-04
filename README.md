@@ -9,16 +9,13 @@ This script allows users to utilize a pre-trained PEFT model with their image da
 
 ## Getting Started
 - Run `python3 finetune.py --help`
-
-### Prerequisites
-- Clone the project `git clone https://github.com/rakshith077-bn/mld-FineTune`
+- Run `python3 feature_extraction.py --help`
 
 ## Note
-- The `finetune.py` script uses **torch** which is not compatible with **python@3.12** and above. To resolve this follow the excat command whilst creating your virtual environment.
+- The `finetune.py` script uses **torch** which is not compatible with **python@3.12** and above. To resolve this follow the exact command whilst creating your virtual environment.
 ```sh
-python3.10 -m venv venv # To prevent dependency issues with torch
+python3.10 -m venv venv 
 source venv/bin/activate  # macOS/Linux
-venv\Scripts\activate  # Windows
 ```
 - You are just creating a python3.10 virutal environment. This should not create any dependency issues.
 
@@ -42,8 +39,7 @@ sample_data
     └── ...
 ```
 
-
-## Run the model with just a few arguments
+## Fine tune your model with just a few commands
 ```python
 python finetune.py --data_path <dataset_path> --num_epochs 10 --batch_size 16
 ```
@@ -60,7 +56,7 @@ python finetune.py --data_path <dataset_path> --num_epochs 10 --batch_size 16
 python feature_extraction.py --model_path <.pth path> --dataset_path <dataset_path>
 ```
 
-## PEFT
+## Overview
 - **Model**: The `google/vit-base-patch16-224` Vision Transformer model is used, fine-tuned with LoRA applied to specific attention layers (`query` and `value` projections).
 - You can experiment with different layers within `config`. Check 'target_modules.txt'
 - **Optimizer**: The **AdamW** optimizer is used with a learning rate of `1e-3`. 
@@ -74,7 +70,7 @@ After training, the model is evaluated on a test dataset, and the average test l
 ## Model Output
 - Outputs `.pth` file within the same directory after training completion, which can be used for feature extraction with a deep learner of your choice.
 
-```
+```bibtext
 The current limitations are known. I'm pushing toward improving this repositry. If you identify an error, a possible fix or sugestion, open a clearly defined pull request. 
 ```
 
