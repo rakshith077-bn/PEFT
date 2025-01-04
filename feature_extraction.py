@@ -6,13 +6,16 @@ from PIL import Image
 from torchvision import transforms
 from load_dataset import ImageDataset
 import argparse
+import logging
 
-parser = argparse.ArgumentParser(description='Example')
+parser = argparse.ArgumentParser(description='Extract Features after fine tuning your model with few commands. The output embeddings are saved in a CSV file.')
     
-parser.add_argument('--model_path', type=str, required=True, help='Path to .pth file created')
+parser.add_argument('--model_path', type=str, required=True, help='Path to .pth file created. This is your .pth file generated after fine-tuning your dataset.')
     
-parser.add_argument('--dataset_path', type=str, required=True, help='Your path to the dataset')
+parser.add_argument('--dataset_path', type=str, required=True, help='Dataset path. Use the same path provided when running finetune.py')
     
+def setup_logging():
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')   
     
 args = parser.parse_args()
 
@@ -23,6 +26,7 @@ OUTPUT_CSV = "embeddings.csv"
 
 # Device setup
 device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.has_mps else "cpu")
+logging.info(f"Using Device: {device}")
 
 # Load the base model
 base_model = AutoModelForImageClassification.from_pretrained("google/vit-base-patch16-224")
@@ -83,4 +87,4 @@ labels_df = pd.DataFrame(labels_list, columns=["label"])
 merged_df = pd.concat([embeddings_df, labels_df], axis=1)
 
 merged_df.to_csv(OUTPUT_CSV, index=False)
-print(f"\nOutput: {OUTPUT_CSV}")
+logging.info(f"Output: {OUTPUT_CSV}")

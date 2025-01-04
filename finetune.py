@@ -4,7 +4,7 @@
 # │ @misc{rakshith2024customPEFTscript,                                           │
 # │   author = {Rakshith B N},                                                    │
 # │   title = {Parameter-Efficient Fine-Tuning of Vision Transformer for Image    │
-# │            Classification for CSCI-525.10 Machine Learning Design},           │
+# │            Classification},                                                   │
 # │   year = {2024},                                                              │
 # │   howpublished = {\url{https://github.com/rakshith077-bn/MLD-Fintune}},       │
 # │                                                                               │
@@ -13,8 +13,10 @@
 #
 # If you use this code in your work, cite it using reference.
 
+# The current update utilizes stratified sampling 
 
 import argparse
+import logging
 import torch
 import torch.utils
 from torch.utils.data import DataLoader
@@ -22,142 +24,63 @@ import torch.utils.data
 from transformers import ViTForImageClassification, Trainer, TrainingArguments
 from peft import LoraConfig, get_peft_model
 from utilities import transformations
-import torchvision
+from torchvision import transforms
+from sklearn.model_selection import StratifiedShuffleSplit
+import numpy as np
 
 import os
 from tqdm import tqdm
 import datetime, time
 
 from load_dataset import ImageDataset
-from colorama import Fore, Style
 
 
-# experiment with different preprocessing approaches if you wish
- 
-transformations = torchvision.transforms.Compose([
-    torchvision.transforms.Resize(size=(224, 224)),
-    torchvision.transforms.ToTensor(),
-    torchvision.transforms.Normalize(
-         mean=[0.485, 0.456, 0.406],
-        std=[0.229, 0.224, 0.225]
-    )
-])
+def setup_logging():
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+def load_data(data_path: str, batch_size: int):
+    transformations = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
 
-def main():
+    dataset = ImageDataset(root_dir=data_path, transform=transformations)
     
-    # Argument parser
-    parser = argparse.ArgumentParser(description='Example')
-    
-    parser.add_argument('--data_path', type=str, required=True, help='Path to the dataset file')
-    
-    parser.add_argument('--num_epochs', type=int, help='Number of training epochs. Minimum is 10')
-    
-    parser.add_argument('--batch_size', type=int, help='Define batch size. Recomended 16, if you are on a slower computer try 8')
-    
-    #parser.add_argument('--num_classes', type=int, help='Number of classes present in your dataset. Count from 1 not 0')
-    
-    args = parser.parse_args()
+    # Stratified Sampling
+    labels = np.array(dataset.labels)
+    splitter = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
 
-    def log_message(stage, message):
-        
-        timestamp = datetime.datetime.now().strftime("[%H:%M:%S]")
-        stage_color = {
-            "info": Fore.CYAN,
-            "success": Fore.GREEN,
-            "warning": Fore.YELLOW,
-            "error": Fore.RED,
-        }.get(stage.lower(), Fore.WHITE)
-        
-        print(f"{timestamp} - {stage_color}{stage.upper():<10}{Style.RESET_ALL} - {message}")
-    
-    # Load dataset using load_dataset.py
-    dataset_path = args.data_path
-    
-    BATCH = args.batch_size
-    
-    # for macOS, recomended you have installed tensorflow-macos and tensorflow-metal
-    device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.has_mps else "cpu")
-    print(f"Using device: {device}") # Know your device. If it is on CPU it is likely take a long time. 
-    
-    dataset = ImageDataset(root_dir=dataset_path, transform=transformations)
-    
-    loader = torch.utils.data.DataLoader(
-        dataset_path,
-        batch_size=BATCH,
-        shuffle=True,
-        num_workers=4,
-    )
-    
-    # print("Loaded Dataset")
-
-    # Split dataset into train and test
-    dataset_size = len(dataset)
-    train_size = int(0.8 * dataset_size)
-    test_size = dataset_size - train_size
-    train_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size, test_size])
+    for train_indices, test_indices in splitter.split(np.zeros(len(labels)), labels):
+        train_dataset = torch.utils.data.Subset(dataset, train_indices)
+        test_dataset = torch.utils.data.Subset(dataset, test_indices)
 
     # Create data loaders
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
+    return train_loader, test_loader
 
-    """
-    
-    @misc{wu2020visual,
-      title={Visual Transformers: Token-based Image Representation and Processing for Computer Vision}, 
-      author={Bichen Wu and Chenfeng Xu and Xiaoliang Dai and Alvin Wan and Peizhao Zhang and Zhicheng Yan and Masayoshi Tomizuka and Joseph Gonzalez and Kurt Keutzer and Peter Vajda},
-      year={2020},
-      eprint={2006.03677},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
-    }
-    
-    @inproceedings{deng2009imagenet,
-    title={Imagenet: A large-scale hierarchical image database},
-    author={Deng, Jia and Dong, Wei and Socher, Richard and Li, Li-Jia and Li, Kai and Fei-Fei, Li},
-    booktitle={2009 IEEE conference on computer vision and pattern recognition},
-    pages={248--255},
-    year={2009},
-    organization={Ieee}
-    }
-    
-    """
-
-    # using patch16-224 since I'm quite familiar with the target modules
+def prepare_model(device):
     model = ViTForImageClassification.from_pretrained('google/vit-base-patch16-224', torch_dtype=torch.float16, device_map='auto')
     model = model.to(device)
-    
-    # Apply parameter-efficient fine-tuning by LORA
     config = LoraConfig(
         r=8,
         lora_alpha=16,
         lora_dropout=0.1,
-        target_modules=['encoder.layer.11.attention.attention.query', 'encoder.layer.11.attention.attention.value'], # feel free to experiment with different layers. Check target_modules.txt
-        inference_mode=False # run inferencing if you wish
+        target_modules=['encoder.layer.11.attention.attention.query', 'encoder.layer.11.attention.attention.value'],
+        inference_mode=False
     )
-    
-    model = get_peft_model(model, config)
+    return get_peft_model(model, config)
 
-    # Recomended for multiple runs under the same .venv 
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-    
-
-    # Define optimizer and loss function
-    
-    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3) # change your learning rate if your system can take it. Consider other factors as well. 
-    
+def train_model(model, train_loader, device, num_epochs):
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
     criterion = torch.nn.CrossEntropyLoss()
-
-    # Training loop
-    num_epochs = args.num_epochs
     
     for epoch in range(num_epochs):
         model.train()
-        
         epoch_start = time.time()
-        log_message("info", f"Starting Epoch {epoch + 1}/{num_epochs}")
+        logging.info(f"Starting Epoch {epoch + 1}/{num_epochs}")
         train_loss = 0
         
         for images, labels in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", leave=False):
@@ -169,38 +92,53 @@ def main():
             optimizer.step()
             train_loss += loss.item()
         
-        
         avg_train_loss = train_loss / len(train_loader)
-        
-        epoch_end = time.time()
-        time_per_epoch = epoch_end - epoch_start
-        
-        log_message("info", f"Epoch {epoch + 1} completed. Training Loss: {avg_train_loss:.4f} - Time: {time_per_epoch:.2f}s")
+        logging.info(f"Epoch {epoch + 1} completed. Training Loss: {avg_train_loss:.4f} - Time: {time.time() - epoch_start:.2f}s")
 
-    # Testing your loss score
+def evaluate_model(model, test_loader, device):
     model.eval()
+    criterion = torch.nn.CrossEntropyLoss()
     test_loss = 0
     
-    
     with torch.no_grad():
-    
         for images, labels in test_loader:
             images, labels = images.to(device), labels.to(device)
-            
             outputs = model(pixel_values=images).logits
-            
             loss = criterion(outputs, labels)
-            
             test_loss += loss.item()
     
     avg_test_loss = test_loss / len(test_loader)
-    
-    log_message("info", f"Test Loss: {avg_test_loss:.4f}")
+    logging.info(f"Test Loss: {avg_test_loss:.4f}")
 
-    # Save the model
-    model_save_path = 'model.pth'
-    torch.save(model.state_dict(), model_save_path)
-    log_message("info", f"Saved Model: {model_save_path}")
+def save_model(model, path='model.pth'):
+    torch.save(model.state_dict(), path)
+    logging.info(f"Saved Model: {path}")
+
+def main():
+    setup_logging()
+    
+    parser = argparse.ArgumentParser(description='Fine-tune Vision Transformer model for Image classification. Fine tune your image dataset with a few commands.')
+
+    parser.add_argument('--data_path', type=str, required=True, help='Path to the dataset file (str). Your dataset has to be structured in the manner specified for training. Check README.md.')
+    
+    parser.add_argument('--num_epochs', type=int, default=10, help='Number of training epochs (int). Default is set to 10.')
+    
+    parser.add_argument('--batch_size', type=int, default=16, help='Batch size (int). Default is set to 16.')
+    
+    args = parser.parse_args()
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.has_mps else "cpu")
+    logging.info(f"Using device: {device}")
+    
+    train_loader, test_loader = load_data(args.data_path, args.batch_size)
+    model = prepare_model(device)
+    
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    
+    train_model(model, train_loader, device, args.num_epochs)
+    evaluate_model(model, test_loader, device)
+    save_model(model)
 
 if __name__ == '__main__':
     main()

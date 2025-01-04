@@ -3,3 +3,4 @@ main.py
 .venv
 model.pth
 AL
+__pycache__
