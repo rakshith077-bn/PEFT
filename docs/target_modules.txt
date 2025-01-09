@@ -9,6 +9,8 @@ for name, module in model.named_modules():
     
 """
 
+O/P:
+
 vit
 vit.embeddings
 vit.embeddings.patch_embeddings

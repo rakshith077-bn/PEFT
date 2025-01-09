@@ -11,9 +11,6 @@
 # │ }                                                                             │
 # └────────────────────────────────────────────────────────────────────────────── ┘
 #
-# If you use this code in your work, cite it using reference.
-
-# The current update utilizes stratified sampling 
 
 import argparse
 import logging
@@ -117,6 +114,7 @@ def save_model(model, path='model.pth'):
 def main():
     setup_logging()
     
+    # parser = argparese.ArgumentParser(description='')
     parser = argparse.ArgumentParser(description='Fine-tune Vision Transformer model for Image classification. Fine tune your image dataset with a few commands.')
 
     parser.add_argument('--data_path', type=str, required=True, help='Path to the dataset file (str). Your dataset has to be structured in the manner specified for training. Check README.md.')
@@ -130,11 +128,13 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.has_mps else "cpu")
     logging.info(f"Using device: {device}")
     
-    train_loader, test_loader = load_data(args.data_path, args.batch_size)
-    model = prepare_model(device)
+    if True:
+        train_loader, test_loader = load_data(args.data_path, args.batch_size)
+        model = prepare_model(device)
+        logging.info("DatasetLoaded")
     
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
+    if torch.cuda.is_available(): 
+        torch.cuda.empty_cache() # Clear Cache
     
     train_model(model, train_loader, device, args.num_epochs)
     evaluate_model(model, test_loader, device)
