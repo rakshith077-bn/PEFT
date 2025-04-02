@@ -1,31 +1,30 @@
-# Fine-Tuning Vision Transformer for Image Classification
+# Fine-Tuning Vision with Transformer for Image Classification
 
-The current update supports Lion-Optimizer, a better alternative to AdamW optimizer.
+The current update supports Lion-Optimizer
 
 ## Overview
-The tool can be utilized a pre-trained PEFT model with their image dataset by running a few simple commands. Note this script intendes use for only image datasets.  
 - This was developed with an aim to demonstrate parameter-efficient fine-tuning of a Vision Transformer (ViT) model using **LoRA (Low-Rank Adaptation)** for image classification. 
 - I've currently fine-tuned the `google/vit-base-patch16-224` model to classify a custom image dataset efficiently, making it suitable for resource-constrained environments. 
  
 
 ## Getting Started
-- Run `python3 finetune.py --help`
-- Run `python3 feature_extraction.py --help`
+- `python3 finetune.py --help`
+- `python3 feature_extraction.py --help`
 
 ## Note
-- The `finetune.py` script uses **torch** which is not compatible with **python@3.12** and higher versions. To prevent dependency issues create your venv with `python3.10`
+- `finetune.py` uses **torch** which creates dependency issues with **python@3.12** and higher versions. To prevent this, create your venv with `python3.10`
 
-**Note**: If in macOS environment, tensorFlow-macos and tensorFlow-metal has to installed to enable cuda/GPU training. Recomended for faster training time if you have a bigger dataset. 
+**Note**: For macOS environment, tensorFlow-macos and tensorFlow-metal has to installed to enable GPU training. Recomended for faster training time if you have a larger dataset. 
 
 ## Running PEFT on sample data
 - run PEFT on the given sample dataset. 
 
 ```python
-python3 finetune.py --data_path <dataset_path> --num_epochs 10 --batch_size 16
+python3 finetune.py --data_path sample_data --num_epochs 10 --batch_size 16
 ```
 
 ### Dataset Format: 
-The dataset is expected to be in the following format. 
+The dataset is expected to be in the followving format:
 
 ```python
 sample_data
@@ -72,3 +71,4 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## Acknowledgments
 - The Vision Transformer model used in this project was pre-trained on the **ImageNet-21k** dataset. https://huggingface.co/models?search=google/vit.  
+- 
