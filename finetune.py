@@ -18,6 +18,8 @@ import torch
 import torch.utils
 from torch.utils.data import DataLoader
 import torch.utils.data
+import torch.nn as nn
+from lion_pytorch import Lion
 from transformers import ViTForImageClassification, Trainer, TrainingArguments
 from peft import LoraConfig, get_peft_model
 from utilities import transformations
@@ -71,7 +73,12 @@ def prepare_model(device):
     return get_peft_model(model, config)
 
 def train_model(model, train_loader, device, num_epochs):
-    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
+    
+    optimizer = nn.Linear(10, 1)
+    opt = Lion(model.parameters(), lr=1e-4, weight_decay=1e-2)
+
+    # optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3) : Remains of AdamW optimizer
+    
     criterion = torch.nn.CrossEntropyLoss()
     
     for epoch in range(num_epochs):
@@ -82,11 +89,12 @@ def train_model(model, train_loader, device, num_epochs):
         
         for images, labels in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", leave=False):
             images, labels = images.to(device), labels.to(device)
-            optimizer.zero_grad()
+            opt.step()
+            opt.zero_grad()
             outputs = model(pixel_values=images).logits
             loss = criterion(outputs, labels)
             loss.backward()
-            optimizer.step()
+            opt.step()
             train_loss += loss.item()
         
         avg_train_loss = train_loss / len(train_loader)

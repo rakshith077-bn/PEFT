@@ -5,6 +5,10 @@ import pandas as pd
 from PIL import Image
 from torchvision import transforms
 from load_dataset import ImageDataset
+
+import warnings 
+warnings.filterwarnings("ignore")
+
 import argparse
 import logging
 
@@ -88,3 +92,4 @@ merged_df = pd.concat([embeddings_df, labels_df], axis=1)
 
 merged_df.to_csv(OUTPUT_CSV, index=False)
 logging.info(f"Output: {OUTPUT_CSV}")
+print(f"Output : {OUTPUT_CSV} saved to the current directory")

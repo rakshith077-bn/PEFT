@@ -1,6 +1,8 @@
 alexNet.py
 main.py
-.venv
+venv
 model.pth
 AL
 __pycache__
+embeddings.csv
+model.pth
