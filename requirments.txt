@@ -11,3 +11,6 @@ tqdm
 transformers==4.46.3
 scikit-learn
 lion-pytorch
+typer
+pyfiglet
+progress

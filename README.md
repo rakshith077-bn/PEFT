@@ -8,19 +8,32 @@ The current update supports Lion-Optimizer
  
 
 ## Getting Started
-- `python3 finetune.py --help`
-- `python3 feature_extraction.py --help`
-
-## Note
-- `finetune.py` uses **torch** which creates dependency issues with **python@3.12** and higher versions. To prevent this, create your venv with `python3.10`
-
-**Note**: For macOS environment, tensorFlow-macos and tensorFlow-metal has to installed to enable GPU training. Recomended for faster training time if you have a larger dataset. 
-
-## Running PEFT on sample data
-- run PEFT on the given sample dataset. 
-
+- Creates dependency issues for python3.11 version and above. Create a virtual environment with **python3.10**
 ```python
-python3 finetune.py --data_path sample_data --num_epochs 10 --batch_size 16
+python3.10 -m venv venv
+```
+- Run 
+```bash
+chmod +x peft.sh
+./peft.sh
+```
+### Note 
+For macOS environment, tensorFlow-macos and tensorFlow-metal has to installed to enable GPU training. Recomended for faster training time if you have a larger dataset. 
+
+## Usage
+```python
+python3 finetune.py --help # For finetuning your dataset
+python3 feature_extraction.py --help # Extract features once you have finished fine tuning
+```
+
+- run PEFT on sample dataset.
+```python
+python3 finetune.py --data-path sample_data --num-epochs 10 --batch-size 16
+```
+
+- Extract features of the finetuned sample dataset
+```python
+python3 feature_extraction.py --model_path model.pth --dataset_path sample_data
 ```
 
 ### Dataset Format: 
