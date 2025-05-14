@@ -1,8 +1,9 @@
+import torch
 from transformers import ViTForImageClassification, Trainer, TrainingArguments
 from peft import LoraConfig, get_peft_model
 
 def prepare_model(device):
-    model = ViTForImageClassification.from_pretrainned('google/vit-base-patch16-224', torch_dtype=torch.float16, device_map='auto')
+    model = ViTForImageClassification.from_pretrained('google/vit-base-patch16-224', torch_dtype=torch.float16, device_map='auto')
 
     model = model.to(device)
     config = LoraConfig(

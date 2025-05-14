@@ -5,8 +5,8 @@ def welcome_note():
     colored_text = f"\033[31m{text}\033[0m" 
     print(colored_text)
     print(" ")
-    print("- python3 finetune.py --help' for help with finetune.py \n")
-    print("- python3 feature_extraction.py --help for help with feature extraction")
+    print("\n - Run python3 finetune.py --help'\n")
+    print("\n - Run python3 feature_extraction.py --help \n")
 
 def main_intro():
     text = figlet_format("Developed by Rakshith", font="standard")

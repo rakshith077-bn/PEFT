@@ -1,18 +1,18 @@
 # Fine-Tuning Vision with Transformer for Image Classification
 
-This version is under testing and is undergoing feature updates. To use this repo clone the previous stable version.
-
-The current update supports Lion-Optimizer
+The current update supports Lion-Optimizer and is best suited for a medium sized image datasets.
 
 ## Overview
 - This was developed with an aim to demonstrate parameter-efficient fine-tuning of a Vision Transformer (ViT) model using **LoRA (Low-Rank Adaptation)** for image classification. 
-- I've currently fine-tuned the `google/vit-base-patch16-224` model to classify a custom image dataset efficiently, making it suitable for resource-constrained environments. 
+- Best suited for resource constrained environments that wants to train small to medium sized image datasets.
  
 
 ## Getting Started
-- Creates dependency issues for python3.11 version and above. Create a virtual environment with **python3.10**
+- Known to create dependency issues with python3.11 version and more. Create venv with **python3.10** and follow the given steps
 ```python
 python3.10 -m venv venv
+source venv/bin/activate
+git clone https://github.com/rakshith077-bn/PEFT/tree/test
 ```
 - Run 
 ```bash
@@ -23,23 +23,27 @@ chmod +x peft.sh
 For macOS environment, tensorFlow-macos and tensorFlow-metal has to installed to enable GPU training. Recomended for faster training time if you have a larger dataset. 
 
 ## Usage
-```python
-python3 finetune.py --help # For finetuning your dataset
-python3 feature_extraction.py --help # Extract features once you have finished fine tuning
+```
+cd src 
 ```
 
-- run PEFT on sample dataset.
+```python
+python3 finetune.py --help 
+python3 feature_extraction.py --help 
+```
+
+- run PEFT on the given sample dataset
 ```python
 python3 finetune.py --data-path sample_data --num-epochs 10 --batch-size 16
 ```
 
-- Extract features of the finetuned sample dataset
+- Extract features with
 ```python
 python3 feature_extraction.py --model_path model.pth --dataset_path sample_data
 ```
 
 ### Dataset Format: 
-The dataset is expected to be in the followving format:
+The dataset is expected to be in the following format:
 
 ```python
 sample_data
@@ -49,25 +53,18 @@ sample_data
     └── ...
 ```
 
-## Extract Features
-- Utilize the feature extraction method to extract embeddings. The output is a .CSV file. 
-- Run the feature extraction with just a few arguments. 
+## Extract Feature Embeddings
 ```python
 python feature_extraction.py --model_path <.pth path> --dataset_path <dataset_path>
 ```
 
-## Model 
-- **Model**: The `google/vit-base-patch16-224` Vision Transformer model is used, fine-tuned with LoRA.
-- **Optimizer**: Lion-Optimizer
-- **Loss Function**: **Cross Entropy Loss**. Calculated at the end of each epoch.
-
 ## Evaluation
-After training, the model is evaluated on a test dataset, and the average test loss is reported. The current update uses stratified sampling.
+The model is evaluated on a test dataset, and the average test loss is reported. The current update uses stratified sampling.
 
 ## Output
 - Outputs `.pth` file within the same directory. 
 
-The current limitations are known. I'm pushing toward improving this repositry. If you identify an error, a possible fix or improvement, open a clearly defined pull request. 
+The current limitations are known. I'm pushing toward improving this repositry. If you identify an error, a possible fix or improvement, open a clearly defined pull request.
 
 ## License
 This project is open source and available under the [MIT License](LICENSE).
