@@ -7,9 +7,10 @@ I appreciate your interest in contributing to `PEFT`!. I aim to come up with a b
 Before making a contribution, please ensure you have read and understood the following:
 - **README.md**: This file outlines instructions for getting started with the model. Ensure you get the model running on your local system and run the `finetune.py` and `feature_extraction.py` with `sample_data`. 
 
-**NOTE**: The `sample_data` contains very limited images which will not yield potential results that are comparable.
+**NOTE**: The `sample_data` now contains a decent amount of images, that can be used to check the running condition of the model on your system.
 
-- You are encouraged to test the model with an image dataset of your own. The guidelines for selecting the image datasets have not been laid out yet, if you feel like this model showcases better performance for a specific type of image datasets, ensure to include a clear and detailed description of the dataset used in a separate file when contributing. 
+- The model isn't suited to a specific type of images, but if you do encounter any problems with your dataset, open a clearly stated issue. 
+- If you are using multiple image dataset, and find the it  works better on a specific type of dataset, write a new file named 'datasets.md' within this directory and describe the nature of datasets used and the performance comparision appropriately.  
 
 ## How To Contribute
 
@@ -18,7 +19,7 @@ Before making a contribution, please ensure you have read and understood the fol
 3. Push your committed changes to your forked repositry.
 4. Publish a PR by providing a clean title and a precise description of your changes.
 
-You are welcome to report bugs, suggest enhancements, add new features or improve documentation. 
+Reporting bugs, suggestions, enhancements, and new features or improve documentation is appreciated.  
 
 ## Reporting Bugs
 
@@ -33,6 +34,6 @@ You are welcome to report bugs, suggest enhancements, add new features or improv
 If you encounter any issues, open an issue in the repository with a detailed description of the problem. 
 
 ## Code of Conduct
-This repository is aimed at creating an inclusive environment for all contributors to come. Please be respectful with a collaborative mindset toward everyone.
+This repository is aimed at creating an inclusive environment for all contributors to come. Please be respectful with a collaborative mindset toward each contributor.
 
 Thank you for contributing. Happy coding!!

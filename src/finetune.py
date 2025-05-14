@@ -26,10 +26,9 @@ import os
 from tqdm import tqdm
 import datetime, time
 
-from data import data_load
 from load_dataset import ImageDataset
 from model import prepare_model
-from header import data_load, welcome_note, general_info
+from header import welcome_note, general_info
 
 def setup_logging():
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -55,8 +54,7 @@ def load_data(data_path: str, batch_size: int):
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
-    return dataset
-    return train_loader, test_loader
+    return train_loader, test_loader, train_dataset, test_dataset
 
 def train_model(model, train_loader, device, num_epochs):
 
@@ -71,10 +69,10 @@ def train_model(model, train_loader, device, num_epochs):
 
             model.train()
             epoch_start = time.time()
-            logging.info(f"Starting Epoch {epoch + 1}/{num_epochs}")
+            logging.info(f"\n Starting Epoch {epoch + 1}/{num_epochs}")
             train_loss = 0
 
-            with bar.Bar(f'Epoch {epoch + 1}', max=len(train_loader)) as batch_bar:
+            with bar.Bar(f'\n Epoch {epoch + 1}', max=len(train_loader)) as batch_bar:
                 for images, labels in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}"):
 
                     images, labels = images.to(device), labels.to(device)
@@ -118,7 +116,7 @@ def evaluate_model(model, dataset, device):
         avg_fold_loss = fold_loss / len(val_loader)
         total_loss += avg_fold_loss
 
-        print(f"Fold {fold + 1} Loss: {avg_fold_loss:.4f}")
+        print(f"\n Fold {fold + 1} Loss: {avg_fold_loss:.4f}")
 
     avg_test_loss = total_loss / k
     print(f"\n Avg Loss: {avg_fold_loss:.4f} \n")
@@ -126,7 +124,7 @@ def evaluate_model(model, dataset, device):
 
 def save_model(model, path='model.pth'):
     torch.save(model.state_dict(), path)
-    print(f"Saved Model: {path}")
+    print(f"\n Saved Model: {path}")
 
 def main(
     data_path: Annotated[str, typer.Option(help="Path to the dataset file (str). Your dataset has to be structured in the manner specified for training. Check README.md.")],
@@ -135,16 +133,13 @@ def main(
     ):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.has_mps else "cpu") 
-    print(f"Using Device : {device}")
+    print(f"\n Using Device : {device}")
 
-    try:
-        if True:
-            train_loader, test_loader, train_dataset, test_dataset = load_data(data_path, batch_size)
-            model = prepare_model(device) # Load model into GPU
-            data_load(device)
-    except Exception as e:
-        print("Dataset did not load successfully")
-        print(e)
+    train_loader, test_loader, train_dataset, test_dataset = load_data(data_path, batch_size)
+    model = prepare_model(device)
+    if True:
+        load_data(data_path, batch_size)
+        print("\n Data Loaded Successfully")
 
     if torch.cuda.is_available():
         torch.cuda.empty_cache() # Clear Cache

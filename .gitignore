@@ -3,3 +3,5 @@ AL
 __pycache__
 embeddings.csv
 README_2.md
+/docs/finetune_documentation.md
+/src/internal_docs
