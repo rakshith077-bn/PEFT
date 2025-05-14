@@ -1,26 +1,25 @@
 # Fine-Tuning Vision with Transformer for Image Classification
 
-The current update supports Lion-Optimizer and is best suited for a medium sized image datasets.
+The current update supports Lion-Optimizer
 
 ## Overview
-- This was developed with an aim to demonstrate parameter-efficient fine-tuning of a Vision Transformer (ViT) model using **LoRA (Low-Rank Adaptation)** for image classification. 
-- Best suited for resource constrained environments that wants to train small to medium sized image datasets.
- 
+- PEFT was developed to demonstrate parameter-efficient fine-tuning of a Vision Transformer (ViT) model using **LoRA (Low-Rank Adaptation)** for image classification. 
 
 ## Getting Started
-- Known to create dependency issues with python3.11 version and more. Create venv with **python3.10** and follow the given steps
+- Creates dependency issues with when venv is on python3.11 version and more. Instead create venv with **python3.10** 
+
 ```python
 python3.10 -m venv venv
-source venv/bin/activate
-git clone https://github.com/rakshith077-bn/PEFT/tree/test
 ```
-- Run 
+
+- Clone repo and run 
 ```bash
 chmod +x peft.sh
 ./peft.sh
 ```
+
 ### Note 
-For macOS environment, tensorFlow-macos and tensorFlow-metal has to installed to enable GPU training. Recomended for faster training time if you have a larger dataset. 
+For macOS environment, tensorFlow-macos and tensorFlow-metal is recomended.
 
 ## Usage
 ```
@@ -47,19 +46,14 @@ The dataset is expected to be in the following format:
 
 ```python
 sample_data
-├── folder 
-    ├── class1
-    ├── class2
+├── class 1
+    ├── img1
+    ├── img2
     └── ...
 ```
 
-## Extract Feature Embeddings
-```python
-python feature_extraction.py --model_path <.pth path> --dataset_path <dataset_path>
-```
-
 ## Evaluation
-The model is evaluated on a test dataset, and the average test loss is reported. The current update uses stratified sampling.
+The model is evaluated on a test dataset, and the average test loss is reported at the end of training. Train loss is reported at the end of each epoch.
 
 ## Output
 - Outputs `.pth` file within the same directory. 
