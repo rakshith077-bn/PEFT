@@ -1,5 +1,7 @@
 # Fine-Tuning Vision with Transformer for Image Classification
 
+This version is under testing and is undergoing feature updates. To use this repo clone the previous stable version.
+
 The current update supports Lion-Optimizer
 
 ## Overview
@@ -67,21 +69,5 @@ After training, the model is evaluated on a test dataset, and the average test l
 
 The current limitations are known. I'm pushing toward improving this repositry. If you identify an error, a possible fix or improvement, open a clearly defined pull request. 
 
-## Citation
-If you use this repository in your work, provide the following citation:
-
-```bibtex
-@misc{rakshith2024PEFTscript,
-  author = {Rakshith B N},
-  title = {Parameter-Efficient Fine-Tuning of Vision Transformer for Image Classification },
-  year = {2024},
-  published = {\url{https://github.com/rakshith077-bn/PEFT}},
-}
-```
-
 ## License
 This project is open source and available under the [MIT License](LICENSE).
-
-## Acknowledgments
-- The Vision Transformer model used in this project was pre-trained on the **ImageNet-21k** dataset. https://huggingface.co/models?search=google/vit.  
-- 
